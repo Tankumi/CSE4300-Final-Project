@@ -6,12 +6,15 @@
 #include "simulator.h"
 
 int Simulator::tick(){
+    if(running_ == nullptr && ready_.empty()){
+        return 1; //done
+    }
     for(Process& p : processes_){
         if(p.getArrival() == time_){
             ready_.push_back(&p);
         }
     }
-    if(std::strcmp(sched_.name(), "Shortest Remaining Time to Completion First")){
+    if(!std::strcmp(sched_.name(), "Shortest Remaining Time to Completion First")){
         Process* next = sched_.pickNext(ready_);
         if(next != nullptr && (running_ == nullptr || next->getRemaining() < running_->getRemaining())){
             if(running_ != nullptr){
@@ -27,6 +30,11 @@ int Simulator::tick(){
             }
         }
     }
+    if(!std::strcmp(sched_.name(), "First In First Out")){
+        if(running_->getRemaining() == 0){
+            Process* next = sched_.pickNext(ready_);
+        }
+    }
     if(running_->getStart() == -1){
         running_->setStart(time_);
     }
@@ -40,4 +48,5 @@ int Simulator::tick(){
         running_->setEnd(time_);
         running_ = nullptr;
     }
+    return 0;
 }
