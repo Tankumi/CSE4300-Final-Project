@@ -3,7 +3,7 @@
 enum class State { Running, Ready, Waiting, Done };
 
 class Process {
-    public:
+public:
     Process(int pid, int arrival, int burst, int priority = 0){
         pid_ = pid;
         arrival_ = arrival;
@@ -34,7 +34,7 @@ class Process {
         remaining_ = remaining;
     }
 
-    private:
+private:
     int pid_;
     int arrival_;
     int burst_; //CPU time needed
@@ -45,4 +45,4 @@ class Process {
     int endTime_ = -1;
 
 
-}
+};
