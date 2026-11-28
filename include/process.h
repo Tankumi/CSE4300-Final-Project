@@ -30,8 +30,26 @@ public:
     int getRemaining(){
         return remaining_;
     }
-    void setReemaining(int remaining){
+    void setRemaining(int remaining){
         remaining_ = remaining;
+    }
+    State getState(){
+        return state_;
+    }
+    void setState(State state){
+        state_ = state;
+    }
+    int getStart(){
+        return startTime_;
+    }
+    void setStart(int start){
+        startTime_ = start;
+    }
+    int getEnd(){
+        return endTime_;
+    }
+    void setEnd(int end){
+        endTime_ = end;
     }
 
 private:
@@ -40,7 +58,7 @@ private:
     int burst_; //CPU time needed
     int remaining_;
     int priority_;
-
+    State state_ = State::Ready;
     int startTime_ = -1;
     int endTime_ = -1;
 

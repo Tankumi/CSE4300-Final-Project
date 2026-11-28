@@ -8,7 +8,7 @@ class Scheduler {
 public:
     virtual ~Scheduler() = default;
 
-    virtual Process* pickNext(vector<Process*>& ready, int now) = 0;
+    virtual Process* pickNext(const vector<Process*>& ready) = 0;
 
     virtual int timeSlice() const { return -1; }
 
@@ -17,23 +17,23 @@ public:
 };
 
 class FIFO : public Scheduler {
-    virtual Process* pickNext(vector<Process*>& ready, int now) override;
+    virtual Process* pickNext(const vector<Process*>& ready) override;
     const char* name() const override {return "First In First Out";}
 };
 
 class SJF : public Scheduler {
-    virtual Process* pickNext(vector<Process*>& ready, int now) override;
+    virtual Process* pickNext(const vector<Process*>& ready) override;
     const char* name() const override {return "Shortest Job First";}
 };
 
 class SRTCF : public Scheduler {
-    virtual Process* pickNext(vector<Process*>& ready, int now) override;
+    virtual Process* pickNext(const vector<Process*>& ready) override;
     const char* name() const override {return "Shortest Remaining Time to Completion First";}
 };
 
 class RR : public Scheduler {
     explicit RR(int quantum) : quantum_(quantum) {}
-    virtual Process* pickNext(vector<Process*>& ready, int now) override;
+    virtual Process* pickNext(const vector<Process*>& ready) override;
     const char* name() const override {return "Round Robin";}
     int timeSlice() const override {return quantum_;}
     
@@ -42,6 +42,6 @@ private:
 };
 
 class PriorityScheduler : public Scheduler {
-    virtual Process* pickNext(vector<Process*>& ready, int now) override;
+    virtual Process* pickNext(const vector<Process*>& ready) override;
     const char* name() const override {return "Priority Scheduler";}
 };
