@@ -6,13 +6,18 @@
 #include "simulator.h"
 
 int Simulator::tick(){
-    if(running_ == nullptr && ready_.empty()){
-        return 1; //done
-    }
+    int done = 1;
     for(Process& p : processes_){
         if(p.getArrival() == time_){
+            p.setState(State::Ready);
             ready_.push_back(&p);
         }
+        if(p.getRemaining() != 0){
+            done = 0;
+        }
+    }
+    if(running_ == nullptr && done){
+        return 1; //done
     }
     if(!std::strcmp(sched_.name(), "Shortest Remaining Time to Completion First")){
         Process* next = sched_.pickNext(ready_);
@@ -23,30 +28,36 @@ int Simulator::tick(){
             }
             running_ = next;
             running_->setState(State::Running);
-            for(Process* p : ready_){
-                if(p == next){
-                    ready_.erase(std::remove(ready_.begin(), ready_.end(), next), ready_.end());
-                }
-            }
+            ready_.erase(std::remove(ready_.begin(), ready_.end(), next), ready_.end());
         }
     }
-    if(!std::strcmp(sched_.name(), "First In First Out")){
-        if(running_->getRemaining() == 0){
+    else if (running_ == nullptr){
+        if(running_ == nullptr){
             Process* next = sched_.pickNext(ready_);
+            if(next != nullptr){
+                running_ = next;
+                running_->setState(State::Running);
+                ready_.erase(std::remove(ready_.begin(), ready_.end(), next), ready_.end());
+            }
+
+            
         }
     }
-    if(running_->getStart() == -1){
-        running_->setStart(time_);
+    if(running_ != nullptr){
+        if(running_->getStart() == -1){
+            running_->setStart(time_);
+        }
     }
+    
     time_++;
-    running_->setRemaining(running_->getRemaining()-1);
-    if(running_->getStart() == -1){
-        running_->setStart(time_);
+    if(running_ != nullptr){
+        running_->setRemaining(running_->getRemaining()-1);
+        if(running_->getRemaining() == 0){
+            running_->setState(State::Done);
+            running_->setEnd(time_);
+            running_ = nullptr;
+        }
     }
-    if(running_->getRemaining() == 0){
-        running_->setState(State::Done);
-        running_->setEnd(time_);
-        running_ = nullptr;
-    }
+    
     return 0;
 }
